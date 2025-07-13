@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Curricular - Ingeniería Química</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+    }
+    .ciclo {
+      flex: 0 0 auto;
+      background: #fff0f5;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ffc0cb;
+      min-width: 220px;
+    }
+    .ciclo h2 {
+      background: #f78fb3;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .curso {
+      display: block;
+      margin: 5px 0;
+      padding: 10px;
+      background: #ffe0ef;
+      border: 2px solid #ffc0cb;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .curso.completado {
+      text-decoration: line-through;
+      background-color: #fcd6dc;
+      border-color: #f48fb1;
+    }
+    .curso.bloqueado {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular Interactiva - Ingeniería Química</h1>
+  <div class="container" id="malla"></div>
+  <script>
+    const cursos = [
+      { id: "BDI01", nombre: "Dibujo en Ingeniería I", ciclo: 1 },
+      { id: "BFI01", nombre: "Física I", ciclo: 1 },
+      { id: "BMA01", nombre: "Cálculo Diferencial", ciclo: 1 },
+      { id: "BMA03", nombre: "Álgebra Lineal", ciclo: 1 },
+      { id: "BUQ01", nombre: "Química I", ciclo: 1 },
+      { id: "BRC01", nombre: "Redacción y Comunicación", ciclo: 1 },
+
+      { id: "BDI02", nombre: "Dibujo en Ingeniería II", ciclo: 2, prereq: ["BDI01"] },
+      { id: "BFI02", nombre: "Física II", ciclo: 2, prereq: ["BFI01"] },
+      { id: "BMA02", nombre: "Cálculo Integral", ciclo: 2, prereq: ["BMA01"] },
+      { id: "BMA04", nombre: "Matemáticas Básicas", ciclo: 2, prereq: ["BMA03"] },
+      { id: "BUQ02", nombre: "Química II", ciclo: 2, prereq: ["BUQ01"] },
+
+      { id: "BEF01", nombre: "Ética y Filosofía Política", ciclo: 3 },
+      { id: "BEG01", nombre: "Economía General", ciclo: 3 },
+      { id: "BFI03", nombre: "Física III", ciclo: 3, prereq: ["BFI02"] },
+      { id: "BIC01", nombre: "Introducción a la Computación", ciclo: 3 },
+      { id: "BMA05", nombre: "Matemáticas Superior I", ciclo: 3, prereq: ["BMA04"] },
+      { id: "QU-216", nombre: "Química Inorgánica", ciclo: 3, prereq: ["BUQ02"] },
+
+      { id: "BFI04", nombre: "Tópicos Especiales en Física", ciclo: 4, prereq: ["BFI03"] },
+      { id: "BMA06", nombre: "Matemáticas Superior II", ciclo: 4, prereq: ["BMA05"] },
+      { id: "EP-308", nombre: "Economía y Organización de la Empresa", ciclo: 4, prereq: ["BEG01"] },
+      { id: "MA613", nombre: "Estadística Aplicada", ciclo: 4, prereq: ["BMA04"]  },
+      { id: "MA713", nombre: "Programación Digital", ciclo: 4, prereq: ["BIC01"]  },
+      { id: "QU-427", nombre: "Físico Química I", ciclo: 4, prereq: ["BUQ02", "BFI03"] },
+
+      { id: "PI-111", nombre: "Balance de Materia y Energía", ciclo: 5, prereq: ["QU-427"] },
+      { id: "PI-524", nombre: "Métodos Numéricos para IQ", ciclo: 5, prereq: ["BMA06"] },
+      { id: "QU-328", nombre: "Química Orgánica I", ciclo: 5, prereq: ["QU-427"] },
+      { id: "QU-428", nombre: "Físico Química II", ciclo: 5, prereq: ["QU-427"] },
+      { id: "QU-518", nombre: "Análisis Químico", ciclo: 5, prereq: ["QU-216"] },
+
+      { id: "BIE01", nombre: "Idioma Extranjero", ciclo: 6 },
+      { id: "BRN01", nombre: "Realidad Nacional", ciclo: 6 },
+      { id: "CE618", nombre: "Mecánica y Resistencia de Materiales", ciclo: 6, prereq: ["BFI04", "BMA06"] },
+      { id: "EE106", nombre: "Circuitos e Instalaciones Eléctricas", ciclo: 6, prereq: ["BFI03", "BMA05"] },
+      { id: "PI-140", nombre: "Fenómenos de Transporte", ciclo: 6, prereq: ["BMA06", "PI-111"] },
+      { id: "PI-126", nombre: "Termodinámica para IQ I", ciclo: 6, prereq: ["PI-111", "QU-428"] },
+      { id: "QU-338", nombre: "Química Orgánica II", ciclo: 6, prereq: ["QU-328"] },
+
+      { id: "PA-113", nombre: "Ingeniería de Métodos I", ciclo: 7, prereq: ["MA-613"] },
+      { id: "PA-714", nombre: "Investigación de Operaciones I", ciclo: 7, prereq: ["MA-613", "MA713"] },
+      { id: "PI-142", nombre: "Transferencia de Cantidad y Movimiento", ciclo: 7, prereq: ["PI-140"] },
+      { id: "PI-217", nombre: "Termodinámica para IQ II", ciclo: 7, prereq: ["PI-126", "PI-524"] },
+      { id: "PI-318", nombre: "Industria de los Procesos Químicos", ciclo: 7, prereq: ["PI-140", "QU-338"] },
+      { id: "PI-514", nombre: "Ciencias de los Materiales", ciclo: 7, prereq: ["QU-518"] },
+      { id: "PI-520", nombre: "Recursos Químicos y Biodiversidad", ciclo: 7, prereq: ["QU-338", "QU-518"] },
+
+      { id: "BAE01", nombre: "Actividades Extracurriculares", ciclo: 8 },
+      { id: "EP-818", nombre: "Costos y Presupuestos", ciclo: 8, prereq: ["EP-308", "PA-714"] },
+      { id: "PI-143", nombre: "Transferencia de Calor", ciclo: 8, prereq: ["PI-142"] },
+      { id: "PI-144", nombre: "Transferencia de Masa", ciclo: 8, prereq: ["PI-142"] },
+      { id: "PI-146", nombre: "Operaciones en IQ I", ciclo: 8, prereq: ["PI-142"] },
+      { id: "PI-365", nombre: "Polímeros I", ciclo: 8, prereq: ["QU-338", "PI-318"] },
+      { id: "PI-521", nombre: "Intro a la Bioingeniería", ciclo: 8, prereq: ["PI-520"] },
+
+      { id: "PI-135", nombre: "Lab de Operaciones Unitarias I", ciclo: 9, prereq: ["PI-143", "PI-146"] },
+      { id: "PI-225", nombre: "Cinética Química y Diseño de Reactores I", ciclo: 9, prereq: ["PI-217"] },
+      { id: "PI-435", nombre: "Instrumentos de Control", ciclo: 9, prereq: ["EE-103", "PI-144"] },
+      { id: "EP-103", nombre: "Economía de los Procesos", ciclo: 9, prereq: ["EP-818", "PI-144"] },
+      { id: "PI-555", nombre: "Seguridad en los Procesos IQ", ciclo: 9, prereq: ["PI-143", "PI-144"] },
+      { id: "PI-911", nombre: "Gestión Tecnológica y Empresarial", ciclo: 9, prereq: ["173 créditos"] },
+      { id: "QT-614", nombre: "Seminario de Tesis I", ciclo: 9 },
+
+      { id: "PA-136", nombre: "Planeamiento y Control de Producción", ciclo: 10, prereq: ["PA-113", "PA-714"] },
+      { id: "PI-136", nombre: "Lab de Operaciones Unitarias II", ciclo: 10, prereq: ["PI-135", "PI-144"] },
+      { id: "PI-426", nombre: "Simulación y Control de Procesos", ciclo: 10, prereq: ["PI-225", "PI-415"] },
+      { id: "PI-525", nombre: "Diseño de Plantas", ciclo: 10, prereq: ["PI-510", "PI-415"] },
+      { id: "QT-615", nombre: "Seminario de Tesis II", ciclo: 10, prereq: ["QT-614"] }
+    ];
+
+    const contenedor = document.getElementById("malla");
+
+    for (let i = 1; i <= 10; i++) {
+      const columna = document.createElement("div");
+      columna.className = "ciclo";
+      const titulo = document.createElement("h2");
+      titulo.textContent = `Ciclo ${i}`;
+      columna.appendChild(titulo);
+
+      cursos.filter(c => c.ciclo === i).forEach(curso => {
+        const div = document.createElement("div");
+        div.className = "curso" + (curso.prereq ? " bloqueado" : "");
+        div.id = curso.id;
+        div.textContent = curso.nombre;
+        if (curso.prereq) div.dataset.prereq = curso.prereq.join(',');
+        columna.appendChild(div);
+      });
+
+      contenedor.appendChild(columna);
+    }
+
+    document.querySelectorAll('.curso').forEach(curso => {
+      curso.addEventListener('click', () => {
+        curso.classList.toggle('completado');
+
+        // Verificar qué cursos pueden desbloquearse
+        document.querySelectorAll('.curso.bloqueado').forEach(c => {
+          const prereq = c.dataset.prereq?.split(',');
+          if (prereq && prereq.every(id => document.getElementById(id)?.classList.contains('completado'))) {
+            c.classList.remove('bloqueado');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
